@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mars Jarvis</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--bg:#0b0709;--g:rgba(255,255,255,.05);--gb:rgba(255,160,120,.16);--rust:#ff5a2c;--ice:#7fe7ff;--sand:#f2d9c2;--mut:#a08e84;--ok:#6dffb0;font-family:'Chakra Petch',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:radial-gradient(900px 600px at 80% -10%,#4a1608 0,transparent 60%),radial-gradient(700px 500px at -10% 110%,#0b2a35 0,transparent 60%),var(--bg);color:var(--sand);display:flex;overflow:hidden}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(255,150,100,.04) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,rgba(255,150,100,.04) 1px,transparent 1px) 0 0/40px 40px;pointer-events:none}
+nav{width:200px;padding:18px 12px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--gb);background:rgba(10,5,6,.6);backdrop-filter:blur(14px);z-index:2}
+.logo{font-weight:700;font-size:20px;letter-spacing:.12em;padding:4px 10px 18px;color:var(--rust)}
+.logo small{display:block;font-size:11px;color:var(--mut);letter-spacing:.2em;font-weight:400}
+nav button{all:unset;cursor:pointer;padding:11px 12px;border-radius:10px;color:var(--mut);display:flex;gap:10px;align-items:center;border:1px solid transparent}
+nav button:hover{color:var(--sand)}
+nav button.on{color:var(--sand);background:var(--g);border-color:var(--gb);box-shadow:inset 3px 0 var(--rust)}
+nav button:focus-visible,.btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+main{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--gb)}
+header h1{font-size:18px;flex:1;font-weight:600}
+.pill{font-size:12px;padding:5px 10px;border-radius:99px;border:1px solid var(--gb);background:var(--g);color:var(--mut);display:flex;gap:6px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+.dot.live{background:var(--ok);animation:pu 1.4s infinite}.dot.arm{background:var(--rust);animation:pu .6s infinite}
+@keyframes pu{50%{box-shadow:0 0 0 6px transparent;opacity:.5}}
+section{display:none;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px}
+section.on{display:block}
+.card{background:var(--g);border:1px solid var(--gb);border-radius:16px;padding:18px;backdrop-filter:blur(16px);margin-bottom:16px}
+.card h2{font-size:15px;margin-bottom:12px;font-weight:600}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.reactor{width:220px;height:220px;margin:6px auto 14px;position:relative}
+.reactor i{position:absolute;inset:0;border-radius:50%;border:2px dashed var(--rust);animation:sp 18s linear infinite}
+.reactor i:nth-child(2){inset:22px;border:2px solid var(--ice);border-right-color:transparent;border-left-color:transparent;animation-duration:7s;animation-direction:reverse}
+.reactor i:nth-child(3){inset:48px;border:3px dotted var(--sand);opacity:.6;animation-duration:12s}
+.reactor b{position:absolute;inset:80px;border-radius:50%;background:radial-gradient(var(--rust),#7a1c06 70%);box-shadow:0 0 40px var(--rust);animation:br 3s ease-in-out infinite}
+.reactor.listen b{background:radial-gradient(var(--ok),#0a6a3a 70%);box-shadow:0 0 50px var(--ok)}
+@keyframes sp{to{transform:rotate(360deg)}}@keyframes br{50%{transform:scale(1.15)}}
+.clock{font-size:40px;font-weight:700;text-align:center}
+.stat{font-size:34px;font-weight:700;color:var(--ice)}
+.muted{color:var(--mut);font-size:13px}
+.btn{all:unset;cursor:pointer;padding:9px 14px;border-radius:10px;border:1px solid var(--gb);background:var(--g);font-size:14px}
+.btn:hover{border-color:var(--rust)}
+.btn.p{background:var(--rust);color:#1a0600;font-weight:600;border-color:var(--rust)}
+.btn.on{border-color:var(--ok);color:var(--ok)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,textarea,select{font:inherit;color:var(--sand);background:rgba(0,0,0,.35);border:1px solid var(--gb);border-radius:10px;padding:10px;width:100%}
+textarea{min-height:90px;resize:vertical}
+.item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--gb)}
+.item:last-child{border:0}.item .t{flex:1;overflow-wrap:anywhere}
+.item.done .t{text-decoration:line-through;opacity:.5}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid}
+.high{color:var(--rust)}.medium{color:var(--sand)}.low{color:var(--ice)}
+.log{max-height:46vh;overflow:auto;font-size:14px}
+.log div{padding:6px 0}.log .u{color:var(--ice)}.log .j{color:var(--sand)}
+pre{font-size:12px;max-height:40vh;overflow:auto;background:rgba(0,0,0,.4);padding:12px;border-radius:10px;white-space:pre-wrap}
+label{display:block;font-size:13px;color:var(--mut);margin:12px 0 5px}
+#toast{position:fixed;bottom:76px;right:18px;background:#1b0d0a;border:1px solid var(--rust);padding:10px 14px;border-radius:10px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+#toast.on{opacity:1}
+@media(max-width:760px){body{flex-direction:column-reverse}nav{width:100%;flex-direction:row;border:0;border-top:1px solid var(--gb);padding:6px;overflow-x:auto}.logo{display:none}nav button{flex:1;justify-content:center;padding:10px 6px;font-size:12px;flex-direction:column;gap:2px}nav button.on{box-shadow:inset 0 3px var(--rust)}section{padding:14px}#toast{bottom:80px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head>
+<body>
+<nav id="nav" aria-label="Sections">
+<div class="logo">MARS JARVIS<small>PHASE 1 · CORE</small></div>
+<button data-s="home" class="on">◉ Home</button><button data-s="notes">✎ Notes</button><button data-s="tasks">☑ Tasks</button><button data-s="memory">▦ Memory</button><button data-s="voice">🎙 Voice</button><button data-s="settings">⚙ Settings</button>
+</nav>
+<main>
+<header><h1 id="title">Home</h1>
+<span class="pill"><span class="dot" id="vdot"></span><span id="vstat">Voice off</span></span>
+<span class="pill"><span class="dot" id="sdot"></span><span id="sstat">Not synced</span></span>
+<button class="btn p" id="signin">Connect Drive</button></header>
+
+<section id="home" class="on">
+<div class="grid">
+<div class="card"><div class="reactor" id="reactor"><i></i><i></i><i></i><b></b></div><div class="clock" id="clock"></div><p class="muted" style="text-align:center" id="greet"></p></div>
+<div class="card"><h2>Memory at a glance</h2><div class="grid" style="grid-template-columns:repeat(2,1fr)">
+<div><div class="stat" id="cN">0</div><div class="muted">Notes</div></div><div><div class="stat" id="cT">0</div><div class="muted">Open tasks</div></div>
+<div><div class="stat" id="cR">0</div><div class="muted">Research</div></div><div><div class="stat" id="cC">0</div><div class="muted">Commands</div></div></div></div>
+<div class="card"><h2>Try saying</h2><p class="muted" style="line-height:1.9">“Jarvis, add note blockchain idea”<br>“Jarvis, show notes”<br>“Jarvis, add high priority task call Maya”<br>“Jarvis, complete task 1”<br>“Jarvis, go to memory”</p></div>
+</div></section>
+
+<section id="notes"><div class="card"><h2 id="nform">New note</h2><textarea id="ntext" placeholder="Write a note…"></textarea>
+<div class="row" style="margin-top:10px"><button class="btn p" id="nsave">Save note</button><button class="btn" id="ncancel" hidden>Cancel edit</button></div></div>
+<div class="card"><input id="nsearch" type="search" placeholder="Search notes…" aria-label="Search notes"><div id="nlist"></div></div></section>
+
+<section id="tasks"><div class="card"><h2>New task</h2><div class="row"><input id="ttext" placeholder="What needs doing?" style="flex:1;min-width:200px">
+<select id="tpri" style="width:auto"><option>high</option><option selected>medium</option><option>low</option></select><button class="btn p" id="tadd">Add task</button></div></div>
+<div class="card" id="tlist"></div></section>
+
+<section id="memory"><div class="card"><h2>jarvis-data.json</h2><p class="muted" id="minfo" style="margin-bottom:12px"></p>
+<div class="row"><button class="btn p" id="msave">Save to Drive</button><button class="btn" id="mload">Load from Drive</button></div></div>
+<div class="card"><h2>Raw memory</h2><pre id="raw"></pre></div></section>
+
+<section id="voice"><div class="card"><div class="row">
+<button class="btn" id="listen">Listen: off</button><button class="btn" id="ptt">Push to talk</button><button class="btn" id="mute">Mute voice</button></div>
+<p class="muted" style="margin-top:10px" id="vhelp"></p>
+<div class="row" style="margin-top:12px"><input id="typed" placeholder="Or type a command…" style="flex:1"><button class="btn" id="tsend">Send</button></div></div>
+<div class="card"><h2>Command history</h2><div class="log" id="log"></div></div></section>
+
+<section id="settings"><div class="card"><h2>Google connection</h2>
+<label for="cid">OAuth Client ID (Web application)</label><input id="cid" placeholder="123456-abc.apps.googleusercontent.com">
+<p class="muted" style="margin-top:8px;line-height:1.6">Create it in Google Cloud Console: enable the Drive API, make an OAuth Web client, and add this page’s origin (for example http://localhost:8000) as an authorized JavaScript origin. Serve this file over http://localhost, not file://.</p></div>
+<div class="card"><h2>Voice</h2><label for="wake">Wake word</label><input id="wake">
+<label for="rate">Speech rate</label><input id="rate" type="range" min=".6" max="1.6" step=".1">
+<label><input type="checkbox" id="spk" style="width:auto"> Speak responses</label>
+<div class="row" style="margin-top:14px"><button class="btn p" id="ssave">Save settings</button></div></div></section>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const FILE='jarvis-data.json',SCOPE='https://www.googleapis.com/auth/drive.file';
+const blank=()=>({notes:[],tasks:[],research:[],settings:{wake:'jarvis',speak:true,rate:1},conversations:[]});
+let D=blank(),token=null,fileId=null,tc=null,saveT,editing=null;
+
+/* ---------- UI helpers ---------- */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600)}
+function go(s){$$('section').forEach(x=>x.classList.toggle('on',x.id===s));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));$('#title').textContent=s[0].toUpperCase()+s.slice(1)}
+$$('nav button').forEach(b=>b.onclick=()=>go(b.dataset.s));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+function sync(state,txt){$('#sdot').className='dot '+(state||'');$('#sstat').textContent=txt}
+
+/* ---------- Google auth + Drive memory ---------- */
+function connect(){
+  const id=localStorage.getItem('mj_cid');
+  if(!id){toast('Add your Google Client ID first');go('settings');return}
+  if(!window.google){toast('Google script not loaded yet');return}
+  tc=google.accounts.oauth2.initTokenClient({client_id:id,scope:SCOPE,callback:async r=>{
+    if(r.error){toast('Sign-in failed: '+r.error);return}
+    token=r.access_token;setTimeout(()=>token=null,(r.expires_in-60)*1000);
+    $('#signin').textContent='Drive connected';await loadMemory();say('Drive connected. Memory loaded.')}});
+  tc.requestAccessToken();
+}
+async function drive(url,opt={}){
+  if(!token)throw new Error('Not connected');
+  const r=await fetch(url,{...opt,headers:{Authorization:'Bearer '+token,...(opt.headers||{})}});
+  if(!r.ok)throw new Error('Drive '+r.status);return r}
+async function loadMemory(){
+  if(!token){toast('Connect Drive first');return false}
+  try{sync('arm','Loading…');
+    const q=encodeURIComponent(`name='${FILE}' and trashed=false`);
+    const l=await(await drive(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`)).json();
+    if(l.files.length){fileId=l.files[0].id;const d=await(await drive(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`)).json();D={...blank(),...d,settings:{...blank().settings,...d.settings}}}
+    else await saveMemory(true);
+    sync('live','Synced with Drive');render();return true}
+  catch(e){sync('','Sync error');toast(e.message);return false}}
+async function saveMemory(now){
+  render();
+  if(!token){sync('','Not synced');return}
+  clearTimeout(saveT);
+  const run=async()=>{try{sync('arm','Saving…');const body=JSON.stringify(D,null,2);
+    if(fileId)await drive(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json'},body});
+    else{const b='mj'+uid(),m=JSON.stringify({name:FILE,mimeType:'application/json'});
+      const r=await drive('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+b},
+      body:`--${b}\r\nContent-Type: application/json\r\n\r\n${m}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${b}--`});fileId=(await r.json()).id}
+    sync('live','Synced with Drive')}catch(e){sync('','Sync error');toast(e.message)}};
+  if(now)await run();else saveT=setTimeout(run,800)}
+function addMemory(c,o){o={id:uid(),created:Date.now(),...o};D[c].push(o);saveMemory();return o}
+function editMemory(c,id,patch){const o=D[c].find(x=>x.id===id);if(!o)return null;Object.assign(o,patch,{updated:Date.now()});saveMemory();return o}
+function deleteMemory(c,id){D[c]=D[c].filter(x=>x.id!==id);saveMemory()}
+
+/* ---------- Render ---------- */
+function render(){
+  const q=$('#nsearch').value.toLowerCase();
+  const ns=D.notes.filter(n=>n.text.toLowerCase().includes(q));
+  $('#nlist').innerHTML=ns.length?ns.map(n=>`<div class="item"><div class="t">${esc(n.text)}<div class="muted">#${D.notes.indexOf(n)+1} · ${new Date(n.updated||n.created).toLocaleString()}</div></div>
+   <button class="btn" data-e="${n.id}">Edit</button><button class="btn" data-d="${n.id}">Delete</button></div>`).join(''):'<p class="muted">No notes yet. Write one above or say “Jarvis, add note …”.</p>';
+  const w={high:0,medium:1,low:2},ts=[...D.tasks].sort((a,b)=>a.done-b.done||w[a.priority]-w[b.priority]);
+  $('#tlist').innerHTML=ts.length?ts.map(t=>`<div class="item ${t.done?'done':''}"><input type="checkbox" style="width:auto;margin-top:4px" ${t.done?'checked':''} data-c="${t.id}" aria-label="Complete task">
+   <div class="t">${esc(t.text)}<div class="muted">#${D.tasks.indexOf(t)+1}</div></div><button class="tag btn ${t.priority}" data-p="${t.id}" title="Change priority">${t.priority}</button><button class="btn" data-x="${t.id}">Delete</button></div>`).join(''):'<p class="muted">No tasks. Add one above or say “Jarvis, add task …”.</p>';
+  $('#cN').textContent=D.notes.length;$('#cT').textContent=D.tasks.filter(t=>!t.done).length;$('#cR').textContent=D.research.length;$('#cC').textContent=D.conversations.length;
+  $('#minfo').textContent=`${D.notes.length} notes · ${D.tasks.length} tasks · ${D.research.length} research · ${D.conversations.length} conversations`;
+  $('#raw').textContent=JSON.stringify(D,null,2);
+  $('#log').innerHTML=D.conversations.slice(-60).map(c=>`<div class="${c.role==='user'?'u':'j'}">${c.role==='user'?'You':'Jarvis'}: ${esc(c.text)}</div>`).join('');
+  $('#log').scrollTop=1e9;
+  $('#mute').textContent=D.settings.speak?'Mute voice':'Unmute voice';$('#mute').classList.toggle('on',!D.settings.speak);
+  $('#vhelp').textContent=`Say “${D.settings.wake}” followed by a command, or press Push to talk.`;
+}
+$('#nlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.d){deleteMemory('notes',b.dataset.d)}
+  if(b.dataset.e){editing=b.dataset.e;$('#ntext').value=D.notes.find(n=>n.id===editing).text;$('#nform').textContent='Edit note';$('#ncancel').hidden=false;$('#ntext').focus()}};
+$('#nsave').onclick=()=>{const t=$('#ntext').value.trim();if(!t)return;editing?editMemory('notes',editing,{text:t}):addMemory('notes',{text:t});resetNote()};
+$('#ncancel').onclick=resetNote;
+function resetNote(){editing=null;$('#ntext').value='';$('#nform').textContent='New note';$('#ncancel').hidden=true}
+$('#nsearch').oninput=render;
+$('#tadd').onclick=()=>{const t=$('#ttext').value.trim();if(!t)return;addMemory('tasks',{text:t,priority:$('#tpri').value,done:false});$('#ttext').value=''};
+$('#tlist').onclick=e=>{const b=e.target.closest('[data-c],[data-p],[data-x]');if(!b)return;const d=b.dataset;
+  if(d.x)deleteMemory('tasks',d.x);
+  if(d.c)editMemory('tasks',d.c,{done:b.checked});
+  if(d.p){const o=D.tasks.find(t=>t.id===d.p),n=['high','medium','low'];editMemory('tasks',d.p,{priority:n[(n.indexOf(o.priority)+1)%3]})}};
+$('#signin').onclick=connect;$('#msave').onclick=()=>saveMemory(true);$('#mload').onclick=loadMemory;
+$('#cid').value=localStorage.getItem('mj_cid')||'';
+$('#ssave').onclick=()=>{localStorage.setItem('mj_cid',$('#cid').value.trim());D.settings.wake=($('#wake').value.trim()||'jarvis').toLowerCase();D.settings.rate=+$('#rate').value;D.settings.speak=$('#spk').checked;saveMemory();toast('Settings saved')};
+function fillSettings(){$('#wake').value=D.settings.wake;$('#rate').value=D.settings.rate;$('#spk').checked=D.settings.speak}
+setInterval(()=>{const d=new Date();$('#clock').textContent=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const h=d.getHours();$('#greet').textContent=(h<12?'Good morning':h<18?'Good afternoon':'Good evening')+'. All systems nominal.'},1000);
+
+/* ---------- Voice ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null,listening=false,armedAt=0,speaking=false;
+function vstate(){const d=$('#vdot');d.className='dot'+(Date.now()-armedAt<8000&&listening?' arm':listening?' live':'');
+  $('#vstat').textContent=!listening?'Voice off':Date.now()-armedAt<8000?'Awaiting command':'Listening for “'+D.settings.wake+'”';
+  $('#reactor').classList.toggle('listen',listening);$('#listen').textContent='Listen: '+(listening?'on':'off');$('#listen').classList.toggle('on',listening)}
+setInterval(vstate,500);
+function startRec(){
+  if(!SR){toast('Speech recognition needs Chrome, Edge or Safari');return false}
+  if(!rec){rec=new SR();rec.continuous=true;rec.interimResults=false;rec.lang='en-US';
+    rec.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){if(!e.results[i].isFinal||speaking)continue;heard(e.results[i][0].transcript)}};
+    rec.onend=()=>{if(listening)setTimeout(()=>{try{rec.start()}catch(_){}},300);vstate()};
+    rec.onerror=e=>{if(e.error==='not-allowed'){listening=false;toast('Microphone permission denied')}}}
+  try{rec.start()}catch(_){}return true}
+function setListen(on){listening=on&&(SR?true:false);if(on){if(!startRec())listening=false}else if(rec){rec.stop()}vstate()}
+$('#listen').onclick=()=>setListen(!listening);
+$('#ptt').onclick=()=>{armedAt=Date.now();if(!listening)setListen(true);vstate();toast('Listening for your command…')};
+$('#mute').onclick=()=>{D.settings.speak=!D.settings.speak;if(!D.settings.speak)speechSynthesis.cancel();saveMemory()};
+function heard(raw){
+  const t=raw.toLowerCase().trim(),w=D.settings.wake,i=t.indexOf(w);
+  if(i>=0){const cmd=t.slice(i+w.length).replace(/^[\s,.:]+/,'');if(cmd)run(cmd);else{armedAt=Date.now();say('Yes?')}}
+  else if(Date.now()-armedAt<8000){armedAt=0;run(t)}}
+$('#tsend').onclick=()=>{const v=$('#typed').value.trim();if(v){run(v.toLowerCase().replace(new RegExp('^'+D.settings.wake+'[\\s,]*'),''));$('#typed').value=''}};
+$('#typed').onkeydown=e=>{if(e.key==='Enter')$('#tsend').click()};
+function say(t){D.conversations.push({id:uid(),role:'jarvis',text:t,created:Date.now()});if(D.conversations.length>300)D.conversations.shift();render();saveMemory();
+  if(D.settings.speak&&window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=D.settings.rate;speaking=true;u.onend=u.onerror=()=>setTimeout(()=>speaking=false,300);speechSynthesis.speak(u)}}
+const pick=(c,k)=>{k=k.trim();return /^\d+$/.test(k)?D[c][+k-1]:D[c].find(x=>x.text.toLowerCase().includes(k))};
+function run(c){
+  c=c.replace(/[.!?]+$/,'').trim();D.conversations.push({id:uid(),role:'user',text:c,created:Date.now()});
+  let m,o;
+  if(m=c.match(/^(?:add|save|create|take|make|at)\s+(?:a\s+)?note\s*(?:that|:)?\s*(.+)/)){addMemory('notes',{text:m[1]});return say('I have saved your note.')}
+  if(m=c.match(/^edit\s+note\s+(\d+)\s+(?:to\s+)?(.+)/)){o=pick('notes',m[1]);return say(o?(editMemory('notes',o.id,{text:m[2]}),'Note updated.'):'I could not find that note.')}
+  if(m=c.match(/^delete\s+note\s+(.+)/)){o=pick('notes',m[1]);return say(o?(deleteMemory('notes',o.id),'Note deleted.'):'I could not find that note.')}
+  if(m=c.match(/^search\s+(?:my\s+)?notes?\s+(?:for\s+)?(.+)/)){go('notes');$('#nsearch').value=m[1];render();const n=D.notes.filter(x=>x.text.toLowerCase().includes(m[1])).length;return say(`I found ${n} matching ${n===1?'note':'notes'}.`)}
+  if(/^(?:show|list|read|open)\s+(?:my\s+)?notes?$/.test(c)){go('notes');$('#nsearch').value='';render();return say(D.notes.length?`You have ${D.notes.length} notes. Latest: ${D.notes.slice(-1)[0].text}`:'You have no notes yet.')}
+  if(m=c.match(/^(?:add|create|new)\s+(?:(high|medium|low)\s+priority\s+)?task\s+(.+)/)){addMemory('tasks',{text:m[2],priority:m[1]||'medium',done:false});return say(`Task added with ${m[1]||'medium'} priority.`)}
+  if(m=c.match(/^(?:complete|finish|check off)\s+task\s+(.+)/)){o=pick('tasks',m[1]);return say(o?(editMemory('tasks',o.id,{done:true}),'Task completed.'):'I could not find that task.')}
+  if(m=c.match(/^delete\s+task\s+(.+)/)){o=pick('tasks',m[1]);return say(o?(deleteMemory('tasks',o.id),'Task deleted.'):'I could not find that task.')}
+  if(m=c.match(/^(?:set\s+)?priority\s+(?:of\s+)?(?:task\s+)?(.+?)\s+(?:to\s+)?(high|medium|low)$/)){o=pick('tasks',m[1]);return say(o?(editMemory('tasks',o.id,{priority:m[2]}),`Priority set to ${m[2]}.`):'I could not find that task.')}
+  if(/^(?:show|list|open)\s+(?:my\s+)?tasks?$/.test(c)){go('tasks');const n=D.tasks.filter(t=>!t.done);return say(n.length?`You have ${n.length} open tasks. Top one: ${n.sort((a,b)=>'hml'.indexOf(a.priority[0])-'hml'.indexOf(b.priority[0]))[0].text}`:'You have no open tasks.')}
+  if(/^(?:save|sync)\s+memory/.test(c)){saveMemory(true);return say('Memory saved.')}
+  if(/^load\s+memory/.test(c)){loadMemory();return say('Reloading memory.')}
+  if(/^(?:stop|be quiet|silence)/.test(c)){speechSynthesis.cancel();return render()}
+  if(m=c.match(/^(?:go to|open|show)\s+(?:the\s+)?(home|notes|tasks|memory|voice|settings)/)){go(m[1]);return say('Opening '+m[1]+'.')}
+  say("Sorry, I don't know that command yet.")}
+
+fillSettings();render();vstate();
+</script></body></html>
